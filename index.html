@@ -33,33 +33,50 @@
   </div>
 
   <script>
-    const bills = [
-      { name: "Electricity", amount: "", paid: false },
-      { name: "Water", amount: "", paid: false },
-      { name: "Internet", amount: "", paid: false },
-      { name: "Heating", amount: "", paid: false }
-    ];
+  const bills = [
+    { name: "Electricity", amount: "", paid: false },
+    { name: "Water", amount: "", paid: false },
+    { name: "Internet", amount: "", paid: false },
+    { name: "Mobile", amount: "", paid: false },
+    { name: "Loan", amount: "300", paid: false, resetMonthly: true },
+    { name: "Κοινόχρηστα", amount: "", paid: false }
+  ];
 
-    function renderBills() {
-      const container = document.getElementById("bills");
-      container.innerHTML = "";
-      bills.forEach((bill, index) => {
-        const div = document.createElement("div");
-        div.className = "bill" + (bill.paid ? " paid" : "");
-        div.innerHTML = `
-          <span>${bill.name} - €${bill.amount || "..."}</span>
-          <input type="checkbox" ${bill.paid ? "checked" : ""} onclick="togglePaid(${index})" />
-        `;
-        container.appendChild(div);
+  // Check today's date and reset Loan if needed
+  function resetMonthlyBills() {
+    const today = new Date();
+    const day = today.getDate();
+    if (day >= 27) {
+      bills.forEach(bill => {
+        if (bill.resetMonthly) {
+          bill.paid = false;
+        }
       });
     }
+  }
 
-    function togglePaid(index) {
-      bills[index].paid = !bills[index].paid;
-      renderBills();
-    }
+  function renderBills() {
+    resetMonthlyBills(); // Ensure loan resets when needed
 
+    const container = document.getElementById("bills");
+    container.innerHTML = "";
+    bills.forEach((bill, index) => {
+      const div = document.createElement("div");
+      div.className = "bill" + (bill.paid ? " paid" : "");
+      div.innerHTML = `
+        <span>${bill.name} - €${bill.amount || "..."}</span>
+        <input type="checkbox" ${bill.paid ? "checked" : ""} onclick="togglePaid(${index})" />
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function togglePaid(index) {
+    bills[index].paid = !bills[index].paid;
     renderBills();
-  </script>
+  }
+
+  renderBills();
+</script>
 </body>
 </html>
