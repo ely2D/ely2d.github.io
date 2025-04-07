@@ -1,10 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Hello</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bill Tracker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .bill {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .paid {
+      text-decoration: line-through;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello from BillTracker!</h1>
+  <h1>Monthly Bills</h1>
+  <div id="bills">
+    <!-- Bills get injected here -->
+  </div>
+
+  <script>
+    const bills = [
+      { name: "Electricity", amount: "", paid: false },
+      { name: "Water", amount: "", paid: false },
+      { name: "Internet", amount: "", paid: false },
+      { name: "Heating", amount: "", paid: false }
+    ];
+
+    function renderBills() {
+      const container = document.getElementById("bills");
+      container.innerHTML = "";
+      bills.forEach((bill, index) => {
+        const div = document.createElement("div");
+        div.className = "bill" + (bill.paid ? " paid" : "");
+        div.innerHTML = `
+          <span>${bill.name} - €${bill.amount || "..."}</span>
+          <input type="checkbox" ${bill.paid ? "checked" : ""} onclick="togglePaid(${index})" />
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function togglePaid(index) {
+      bills[index].paid = !bills[index].paid;
+      renderBills();
+    }
+
+    renderBills();
+  </script>
 </body>
 </html>
