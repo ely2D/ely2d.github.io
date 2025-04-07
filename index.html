@@ -29,7 +29,7 @@
 <body>
   <h1>Monthly Bills</h1>
   <div id="bills">
-    <!-- Bills get injected here -->
+    <!-- Bills will be injected here -->
   </div>
 
   <script>
@@ -42,7 +42,7 @@
     { name: "Κοινόχρηστα", amount: "", paid: false }
   ];
 
-  // Check today's date and reset Loan if needed
+  // Function to reset monthly bills (e.g., Loan)
   function resetMonthlyBills() {
     const today = new Date();
     const day = today.getDate();
@@ -55,6 +55,25 @@
     }
   }
 
+  // Fetch the bill amount from the backend (Flask)
+  function fetchBillAmount() {
+    fetch('http://127.0.0.1:5000/get_bill_amount')
+      .then(response => response.json())
+      .then(data => {
+        if (data.bill_amount) {
+          // Update the electricity bill amount dynamically
+          bills[1].amount = data.bill_amount;
+          renderBills(); // Re-render the bills with updated data
+        } else {
+          alert("Failed to fetch bill amount");
+        }
+      })
+      .catch(error => {
+        alert("Error fetching bill amount");
+      });
+  }
+
+  // Render bills list
   function renderBills() {
     resetMonthlyBills(); // Ensure loan resets when needed
 
@@ -64,19 +83,25 @@
       const div = document.createElement("div");
       div.className = "bill" + (bill.paid ? " paid" : "");
       div.innerHTML = `
-        <span>${bill.name} - €${bill.amount || "..."}</span>
+        <span>${bill.name} - €${bill.amount || "Loading..."}</span>
         <input type="checkbox" ${bill.paid ? "checked" : ""} onclick="togglePaid(${index})" />
       `;
       container.appendChild(div);
     });
   }
 
+  // Toggle paid status
   function togglePaid(index) {
     bills[index].paid = !bills[index].paid;
     renderBills();
   }
 
+  // Initial render and fetching bill amount
   renderBills();
-</script>
+  fetchBillAmount(); // Get the bill amount from the back-end
+
+  // Optionally, update every 24 hours
+  setInterval(fetchBillAmount, 24 * 60 * 60 * 1000); // Update daily
+  </script>
 </body>
 </html>
